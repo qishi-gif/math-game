@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字规律小侦探</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', '楷体', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffccd5, #c9f5ff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        h1 {
+            color: #ff6b8b;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0 #ffe0e6;
+            animation: bounce 2s infinite;
+        }
+        
+        .detective-bear {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23d2691e"/><circle cx="35" cy="40" r="10" fill="white"/><circle cx="65" cy="40" r="10" fill="white"/><circle cx="35" cy="40" r="5" fill="black"/><circle cx="65" cy="40" r="5" fill="black"/><path d="M40,65 Q50,75 60,65" stroke="black" stroke-width="3" fill="none"/><circle cx="30" cy="30" r="5" fill="black"/><circle cx="70" cy="30" r="5" fill="black"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: wiggle 3s infinite;
+        }
+        
+        .problem-box {
+            background: #fff9c4;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 3px dashed #ffcc02;
+            text-align: center;
+        }
+        
+        .number-sequence {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .number {
+            width: 60px;
+            height: 60px;
+            background: #a5d6ff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0066cc;
+            box-shadow: 0 4px 0 #4d94ff;
+            animation: pulse 2s infinite;
+        }
+        
+        .blank {
+            width: 60px;
+            height: 60px;
+            background: #ffccd5;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff3366;
+            border: 2px dashed #ff99aa;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .option {
+            width: 70px;
+            height: 70px;
+            background: #c8e6c9;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #66bb6a;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            transform: translateY(-5px);
+            background: #a5d6a7;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+        
+        .hint-btn {
+            background: #ffd54f;
+            color: #b26a00;
+        }
+        
+        .next-btn {
+            background: #81c784;
+            color: #1b5e20;
+        }
+        
+        .explanation {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+            border-left: 5px solid #2196f3;
+            animation: fadeIn 0.5s;
+        }
+        
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            75% { transform: rotate(-3deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            50% { transform: translateY(-40px) translateX(-10px); }
+            75% { transform: translateY(-20px) translateX(10px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .feedback {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 22px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        
+        .correct {
+            color: #4caf50;
+        }
+        
+        .incorrect {
+            color: #f44336;
+        }
+        
+        .speech-bubble {
+            position: relative;
+            background: #fff9c4;
+            border-radius: 20px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 2px solid #ffcc02;
+            animation: fadeIn 0.5s;
+        }
+        
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            border: 15px solid transparent;
+            border-top-color: #ffcc02;
+            transform: translateX(-50%);
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .audio-btn {
+            padding: 10px 20px;
+            background: #bb86fc;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #9a67ea;
+        }
+        
+        .audio-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="detective-bear"></div>
+            <h1>数字规律小侦探</h1>
+            <p>小朋友，你能找出数字的规律吗？</p>
+        </div>
+        
+        <div class="problem-box">
+            <p>观察下面的数字，找出规律并填空：</p>
+            <div class="number-sequence">
+                <div class="number">2</div>
+                <div class="number">4</div>
+                <div class="number">6</div>
+                <div class="number">8</div>
+                <div class="blank" id="blank1">?</div>
+                <div class="blank" id="blank2">?</div>
+            </div>
+        </div>
+        
+        <div class="speech-bubble" id="speech">
+            小熊侦探：嗨！我是数字小侦探！让我们一起来找规律吧！
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div class="options">
+            <div class="option" onclick="selectOption(10)">10</div>
+            <div class="option" onclick="selectOption(12)">12</div>
+            <div class="option" onclick="selectOption(9)">9</div>
+            <div class="option" onclick="selectOption(11)">11</div>
+        </div>
+        
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="playStepByStep()">分步讲解</button>
+            <button class="audio-btn" onclick="playFullExplanation()">完整答案</button>
+            <button class="audio-btn" onclick="playEncouragement()">鼓励一下</button>
+        </div>
+        
+        <div class="controls">
+            <button class="btn hint-btn" onclick="showHint()">给我提示</button>
+            <button class="btn next-btn" onclick="checkAnswer()">检查答案</button>
+        </div>
+        
+        <div class="explanation" id="explanation">
+            <h3>解题思路：</h3>
+            <p>1. 观察数字：2, 4, 6, 8</p>
+            <p>2. 每个数字都比前一个数字大2</p>
+            <p>3. 所以规律是：每次加2</p>
+            <p>4. 8 + 2 = 10</p>
+            <p>5. 10 + 2 = 12</p>
+            <p>正确答案是：10 和 12</p>
+        </div>
+    </div>
+    
+    <!-- 创建漂浮的气泡 -->
+    <script>
+        // 创建气泡
+        function createBubbles() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                
+                // 随机大小
+                const size = Math.random() * 30 + 10;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                
+                // 随机位置
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画延迟
+                bubble.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(bubble);
+            }
+        }
+        
+        // 初始化
+        window.onload = function() {
+            createBubbles();
+        };
+        
+        let selectedOptions = [null, null];
+        let currentBlank = 0;
+        
+        function selectOption(number) {
+            if (currentBlank < 2) {
+                selectedOptions[currentBlank] = number;
+                document.getElementById(`blank${currentBlank + 1}`).textContent = number;
+                document.getElementById('feedback').textContent = `你选择了 ${number} 作为第 ${currentBlank + 1} 个空`;
+                document.getElementById('feedback').className = 'feedback';
+                
+                currentBlank++;
+                
+                if (currentBlank === 2) {
+                    document.getElementById('feedback').textContent = '两个空都填好了！点击"检查答案"看看对不对吧！';
+                }
+            } else {
+                document.getElementById('feedback').textContent = '两个空都已经填好了！点击"检查答案"吧！';
+                document.getElementById('feedback').className = 'feedback';
+            }
+        }
+        
+        function showHint() {
+            const explanation = document.getElementById('explanation');
+            explanation.style.display = 'block';
+            document.getElementById('speech').textContent = '小熊侦探：看，每个数字都比前一个数字大2，这就是规律！';
+            speak("看，每个数字都比前一个数字大2，这就是规律！");
+        }
+        
+        function checkAnswer() {
+            if (selectedOptions[0] === 10 && selectedOptions[1] === 12) {
+                document.getElementById('feedback').textContent = '太棒了！你答对了！你真是个数学小天才！';
+                document.getElementById('feedback').className = 'feedback correct';
+                document.getElementById('speech').textContent = '小熊侦探：哇！你太厉害了！完全正确！';
+                speak("太棒了！你答对了！你真是个数学小天才！");
+                
+                // 添加庆祝效果
+                confettiEffect();
+            } else {
+                document.getElementById('feedback').textContent = '再想一想，看看数字之间的规律是什么？';
+                document.getElementById('feedback').className = 'feedback incorrect';
+                document.getElementById('speech').textContent = '小熊侦探：没关系，再试试看！仔细观察数字之间的关系。';
+                speak("再想一想，看看数字之间的规律是什么？");
+            }
+        }
+        
+        function playStepByStep() {
+            const steps = [
+                "首先，我们来看这些数字：2，4，6，8",
+                "你发现了吗？每个数字都比前一个数字大2",
+                "2加2等于4，4加2等于6，6加2等于8",
+                "所以规律就是每次加2",
+                "那么8加2等于多少呢？对，是10",
+                "10加2等于多少呢？对，是12",
+                "所以这两个空应该填10和12"
+            ];
+            
+            let stepIndex = 0;
+            document.getElementById('speech').textContent = '小熊侦探：' + steps[stepIndex];
+            speak(steps[stepIndex]);
+            
+            // 模拟分步讲解
+            const interval = setInterval(() => {
+                stepIndex++;
+                if (stepIndex < steps.length) {
+                    document.getElementById('speech').textContent = '小熊侦探：' + steps[stepIndex];
+                    speak(steps[stepIndex]);
+                } else {
+                    clearInterval(interval);
+                }
+            }, 4000);
+        }
+        
+        function playFullExplanation() {
+            const explanation = "这个数字序列的规律是每次加2。2加2等于4，4加2等于6，6加2等于8，所以8加2等于10，10加2等于12。正确答案是10和12。";
+            document.getElementById('speech').textContent = '小熊侦探：' + explanation;
+            speak(explanation);
+        }
+        
+        function playEncouragement() {
+            const encouragements = [
+                "你真棒！继续加油！",
+                "你是个聪明的小侦探！",
+                "数学其实很有趣，对吧？",
+                "我相信你一定能找出规律！",
+                "你做得很好，继续努力！"
+            ];
+            const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+            document.getElementById('speech').textContent = '小熊侦探：' + randomEncouragement;
+            speak(randomEncouragement);
+        }
+        
+        // 简单的语音合成函数
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.2;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        
+        // 简单的庆祝效果
+        function confettiEffect() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = '0';
+                confetti.style.animation = `fall ${Math.random() * 2 + 1}s linear forwards`;
+                
+                container.appendChild(confetti);
+                
+                // 移除confetti元素
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fall {
+                    to {
+                        transform: translateY(100vh) rotate(${Math.random() * 360}deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        function getRandomColor() {
+            const colors = ['#ff6b8b', '#4caf50', '#2196f3', '#ffeb3b', '#9c27b0'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>
