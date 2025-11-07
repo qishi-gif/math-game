@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一年级数学规律探索</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            min-height: 100vh; padding: 20px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .game-container {
+            width: 100%; max-width: 400px; background: white;
+            border-radius: 20px; padding: 25px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .title { color: #ff6b6b; font-size: 24px; margin-bottom: 10px; }
+        .sequence { display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .number { 
+            width: 60px; height: 60px; background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); 
+            color: white; border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 24px; font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .number.empty { background: #f0f0f0; color: #999; border: 2px dashed #ccc; }
+        .arrow { font-size: 20px; color: #ff6b6b; font-weight: bold; }
+        .answer-input { 
+            width: 80px; height: 60px; border: 3px solid #4ecdc4;
+            border-radius: 12px; font-size: 24px; text-align: center;
+            margin: 0 10px; font-weight: bold;
+        }
+        button {
+            padding: 15px 25px; margin: 10px; border: none; border-radius: 25px;
+            background: #ff6b6b; color: white; font-size: 16px; cursor: pointer;
+            font-weight: bold; box-shadow: 0 4px 0 #d35454;
+        }
+        button:active { transform: translateY(4px); box-shadow: none; }
+        .feedback { margin: 15px 0; padding: 15px; border-radius: 10px; min-height: 60px; }
+        .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+        .explanation { background: #a1c4fd; padding: 20px; border-radius: 15px; margin: 20px 0; text-align: left; }
+        .step { margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.3); border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="title">🔢 数字规律探索 🧩</h1>
+        <p style="color: #06d6a0; margin-bottom: 15px;">帮小动物们找到正确的数字！</p>
+        
+        <div style="background: #ffd166; padding: 15px; border-radius: 15px; margin: 15px 0; border: 3px solid #ff9e00;">
+            <h3 style="margin-bottom: 10px;">按规律填数：</h3>
+            <div class="sequence">
+                <div class="number">2</div><div class="arrow">→</div>
+                <div class="number">4</div><div class="arrow">→</div>
+                <div class="number">6</div><div class="arrow">→</div>
+                <div class="number">8</div><div class="arrow">→</div>
+                <div class="number empty" id="blank1">?</div><div class="arrow">→</div>
+                <div class="number empty" id="blank2">?</div>
+            </div>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <p style="margin-bottom: 10px;">请填写正确的数字：</p>
+            <input type="number" class="answer-input" id="answer1" placeholder="?">
+            <input type="number" class="answer-input" id="answer2" placeholder="?">
+        </div>
+        
+        <div>
+            <button onclick="checkAnswer()">✅ 检查答案</button>
+            <button onclick="showExplanation()" style="background: #4ecdc4; box-shadow: 0 4px 0 #3aa89f;">🔍 查看解析</button>
+        </div>
+        
+        <div class="feedback" id="feedback">快填写答案看看吧！</div>
+        
+        <div class="explanation">
+            <h3 style="color: white; margin-bottom: 15px;">📝 解题思路：</h3>
+            <div class="step" id="step1">🐰 观察数字：2, 4, 6, 8</div>
+            <div class="step" id="step2">🔍 计算差值：4-2=2, 6-4=2, 8-6=2</div>
+            <div class="step" id="step3">✨ 发现规律：每个数比前一个数大2</div>
+            <div class="step" id="step4">🎯 应用规律：8+2=10, 10+2=12</div>
+        </div>
+        
+        <div id="finalAnswer" style="background: #06d6a0; color: white; padding: 15px; border-radius: 15px; margin: 15px 0; display: none;">
+            <h3>🎉 正确答案：</h3>
+            <p style="font-size: 18px; font-weight: bold;">2, 4, 6, 8, 10, 12</p>
+        </div>
+    </div>
+
+    <script>
+        function checkAnswer() {
+            const answer1 = parseInt(document.getElementById('answer1').value);
+            const answer2 = parseInt(document.getElementById('answer2').value);
+            const feedback = document.getElementById('feedback');
+            
+            if (isNaN(answer1) || isNaN(answer2)) {
+                feedback.textContent = '❌ 请填写两个数字哦！';
+                feedback.className = 'feedback error';
+                return;
+            }
+            
+            if (answer1 === 10 && answer2 === 12) {
+                feedback.innerHTML = '🎉 <strong>太棒了！答对了！</strong><br>你找到了正确的规律！';
+                feedback.className = 'feedback success';
+                document.getElementById('blank1').textContent = '10';
+                document.getElementById('blank2').textContent = '12';
+                document.getElementById('blank1').classList.remove('empty');
+                document.getElementById('blank2').classList.remove('empty');
+            } else {
+                feedback.innerHTML = '🤔 <strong>再想想看！</strong><br>提示：每个数字比前一个数字大多少？';
+                feedback.className = 'feedback error';
+            }
+        }
+        
+        function showExplanation() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            steps.forEach(step => {
+                document.getElementById(step).style.background = 'rgba(255,255,255,0.8)';
+                document.getElementById(step).style.fontWeight = 'bold';
+                document.getElementById(step).style.color = '#333';
+            });
+            document.getElementById('finalAnswer').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
